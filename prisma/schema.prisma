@@ -38,6 +38,4 @@ model Vote {
 
   proposition   Proposition @relation(fields: [propositionId], references: [id])
   propositionId Int
-
-  @@unique([propositionId, ip])
 }
