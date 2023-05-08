@@ -1,36 +1,43 @@
 import { prisma } from "~/src/db/prisma";
-import { notFound } from "next/navigation";
 import { Proposition } from "~/src/components/proposition/PropositionLine";
 
 export default async function BoardPage({
-    params,
+  params,
 }: {
-    params: { boardId: string };
+  params: { boardId: string };
 }) {
-    const boardId = Number(params.boardId);
+  const boardId = Number(params.boardId);
 
-    const propositions = await prisma.proposition.findMany({
-        where: {
-            boardId: boardId
-        },
+  const propositions = await prisma.proposition.findMany({
+    where: {
+      boardId: boardId,
+    },
+    select: {
+      id: true,
+      title: true,
+      ip: true,
+      _count: {
         select: {
-            id: true,
-            title: true,
-            ip:true,
-            _count: {
-                select: {
-                    vote: true
-                }
-            }
-        }
-    })
+          vote: true,
+        },
+      },
+    },
+    orderBy: {
+      vote: {
+        _count: "desc",
+      },
+    },
+  });
 
-    return <ul className="flex flex-col gap-4">
-        {propositions.map(proposition => (
-            <Proposition key={proposition.id}
-                voteCount={proposition._count.vote}
-                {...proposition}
-            />
-        ))}
-    </ul>;
+  return (
+    <ul className="flex flex-col gap-4">
+      {propositions.map((proposition) => (
+        <Proposition
+          key={proposition.id}
+          voteCount={proposition._count.vote}
+          {...proposition}
+        />
+      ))}
+    </ul>
+  );
 }

@@ -36,6 +36,6 @@ model Vote {
   createdAt DateTime @default(now())
   ip        String
 
-  proposition   Proposition @relation(fields: [propositionId], references: [id])
+  proposition   Proposition @relation(fields: [propositionId], references: [id], onDelete: Cascade)
   propositionId Int
 }
